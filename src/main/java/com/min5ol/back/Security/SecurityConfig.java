@@ -2,6 +2,8 @@ package com.min5ol.back.Security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -40,8 +42,9 @@ public class SecurityConfig {
         return builder.build();
     }
 
-    // ✅ CorsFilter 직접 등록 (Render 환경에서도 무조건 작동)
+    // ✅ CorsFilter + Order 추가로 필터 체인 최상단 등록
     @Bean
+    @Order(Ordered.HIGHEST_PRECEDENCE)
     public CorsFilter corsFilter() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
