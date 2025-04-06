@@ -43,13 +43,4 @@ public class EpisodeController {
     public ResponseEntity<EpisodeResponse> getEpisodeById(@PathVariable Long id) {
         return ResponseEntity.ok(episodeService.getEpisodeById(id));
     }
-
-    // ✅ 타이틀과 연도로 에피소드 조회
-    @GetMapping("/title/{title}")
-    public ResponseEntity<List<EpisodeResponse>> getEpisodesByTitleAndYear(
-            @PathVariable String title,
-            @RequestParam String year) {
-        return ResponseEntity.ok(episodeService.getEpisodesByTitleAndYear(title, year));
-    }
 }
-

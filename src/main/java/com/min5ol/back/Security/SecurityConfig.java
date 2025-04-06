@@ -43,11 +43,8 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of(
-                "http://localhost:5173",
-                "http://localhost:5174",
-                "http://yangflix.kr" // 실제 도메인
-        ));
+        config.setAllowedOrigins(List.of("http://localhost:5173",
+                                        "http://yangflix.kr"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);
@@ -60,26 +57,25 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-            .csrf(csrf -> csrf.disable())
-            .authorizeHttpRequests(auth -> auth
-                .antMatchers(
-                    "/api/login",                // 로그인
-                    "/api/signup/**",            // 회원가입
-                    "/api/content/**",           // 공개 콘텐츠 조회
-                    "/api/episodes/**",          // 공개 에피소드 조회
-                    "/api/image",                // 이미지 업로드 (게스트도 가능)
-                    "/api/guests/**",            // 게스트용 API
-                    "/search", "/mypage",        // 프론트 진입 페이지
-                    "/2020/**", "/2021/**", "/2022/**", "/2023/**", "/2024/**", "/2025/**"
-                ).permitAll()
-                .anyRequest().authenticated()
-            )
-            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .csrf(csrf -> csrf.disable())
+                .authorizeHttpRequests(auth -> auth
+                        .antMatchers(
+                                "/api/login",
+                                "/api/signup/**",
+                                "/year",
+                                "/content/**",
+                                "/api/content/**",
+                                "/episodes/**",
+                                "/api/episodes/**",
+                                "/search",
+                                "/mypage"
+                        ).permitAll()
+                        .anyRequest().authenticated()
+                )
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-
         return http.build();
     }
 }
-

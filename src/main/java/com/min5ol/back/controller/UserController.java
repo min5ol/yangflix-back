@@ -7,7 +7,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.Map;
 
 @RestController
@@ -26,26 +25,20 @@ public class UserController {
     }
 
     @PatchMapping("/profile/image")
-    public ResponseEntity<Map<String, String>> updateProfileImage(
+    public ResponseEntity<String> updateProfileImage(
             @RequestBody Map<String, String> request,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
         String newImage = request.get("profileImage");
         userService.updateProfileImage(userDetails.getUser().getId(), newImage);
-
-        Map<String, String> response = new HashMap<>();
-        response.put("message", "프로필 이미지가 변경되었습니다.");
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok("프로필 이미지가 변경되었습니다.");
     }
 
     @PatchMapping("/nickname")
-    public ResponseEntity<Map<String, String>> updateNickname(
+    public ResponseEntity<String> updateNickname(
             @RequestBody Map<String, String> request,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
         String newNickname = request.get("nickname");
         userService.updateNickname(userDetails.getUser().getId(), newNickname);
-
-        Map<String, String> response = new HashMap<>();
-        response.put("message", "닉네임이 변경되었습니다.");
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok("닉네임이 변경되었습니다.");
     }
 }

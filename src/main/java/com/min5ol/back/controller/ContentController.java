@@ -44,22 +44,10 @@ public class ContentController {
     public ResponseEntity<ContentResponse> getContentById(@PathVariable Long id) {
         return ResponseEntity.ok(contentService.getContentById(id));
     }
-
-    @GetMapping("/title/{title}")
-    public ResponseEntity<ContentResponse> getContentByTitle(@PathVariable String title) {
-        return ResponseEntity.ok(contentService.getContentByTitle(title));
-    }
-
+    
     @GetMapping("/search")
     public ResponseEntity<List<ContentResponse>> searchContents(@RequestParam String keyword) {
         return ResponseEntity.ok(contentService.searchContents(keyword));
     }
-
-    // ✅ 추가: 연도 + 타이틀 기반 조회 (releaseDate 기준)
-    @GetMapping("/search-by-title-year")
-    public ResponseEntity<ContentResponse> getContentByTitleAndYear(
-            @RequestParam String title,
-            @RequestParam String year) {
-        return ResponseEntity.ok(contentService.getContentByTitleAndYear(title, year));
-    }
+    
 }

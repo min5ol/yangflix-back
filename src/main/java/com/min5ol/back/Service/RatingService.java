@@ -27,9 +27,9 @@ public class RatingService {
         this.contentRepository = contentRepository;
     }
 
-    // ✅ userId를 외부에서 받고 DTO에는 userId 제거됨
-    public RatingResponse addRating(Long userId, RatingRequest request) {
-        User user = userRepository.findById(userId)
+    // 평가 추가
+    public RatingResponse addRating(RatingRequest request) {
+        User user = userRepository.findById(request.getUserId())
                 .orElseThrow(() -> new RuntimeException("해당 유저가 존재하지 않습니다."));
         Content content = contentRepository.findById(request.getContentId())
                 .orElseThrow(() -> new RuntimeException("해당 컨텐츠가 존재하지 않습니다."));
@@ -41,6 +41,7 @@ public class RatingService {
         return new RatingResponse(ratingRepository.save(rating));
     }
 
+    // 평가 수정
     public RatingResponse updateRating(Long id, RatingRequest updatedDto) {
         Optional<Rating> existingRating = ratingRepository.findById(id);
         if (existingRating.isPresent()) {
@@ -52,16 +53,19 @@ public class RatingService {
         }
     }
 
+    // 평가 삭제
     public void deleteRating(Long id) {
         ratingRepository.deleteById(id);
     }
 
+    // 특정 컨텐츠의 평가 목록 조회
     public List<RatingResponse> getRatingsByContentId(Long contentId) {
         return ratingRepository.findByContent_Id(contentId).stream()
                 .map(RatingResponse::new)
                 .collect(Collectors.toList());
     }
 
+    // 특정 사용자의 평가 목록 조회
     public List<RatingResponse> getRatingsByUserId(Long userId) {
         return ratingRepository.findByUser_Id(userId).stream()
                 .map(RatingResponse::new)

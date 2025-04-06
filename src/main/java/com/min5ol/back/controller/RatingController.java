@@ -2,10 +2,8 @@ package com.min5ol.back.controller;
 
 import com.min5ol.back.DTO.RatingRequest;
 import com.min5ol.back.DTO.RatingResponse;
-import com.min5ol.back.Security.CustomUserDetails;
 import com.min5ol.back.Service.RatingService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,16 +19,13 @@ public class RatingController {
     }
 
     @PostMapping
-    public ResponseEntity<RatingResponse> addRating(
-            @RequestBody RatingRequest request,
-            @AuthenticationPrincipal CustomUserDetails userDetails) {
-        return ResponseEntity.ok(ratingService.addRating(userDetails.getUser().getId(), request));
+    public ResponseEntity<RatingResponse> addRating(@RequestBody RatingRequest request) {
+        return ResponseEntity.ok(ratingService.addRating(request));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<RatingResponse> updateRating(
-            @PathVariable Long id,
-            @RequestBody RatingRequest updatedDto) {
+            @PathVariable Long id, @RequestBody RatingRequest updatedDto) {
         return ResponseEntity.ok(ratingService.updateRating(id, updatedDto));
     }
 
@@ -45,9 +40,8 @@ public class RatingController {
         return ResponseEntity.ok(ratingService.getRatingsByContentId(contentId));
     }
 
-    @GetMapping("/user")
-    public ResponseEntity<List<RatingResponse>> getRatingsByUser(
-            @AuthenticationPrincipal CustomUserDetails userDetails) {
-        return ResponseEntity.ok(ratingService.getRatingsByUserId(userDetails.getUser().getId()));
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<RatingResponse>> getRatingsByUserId(@PathVariable Long userId) {
+        return ResponseEntity.ok(ratingService.getRatingsByUserId(userId));
     }
 }

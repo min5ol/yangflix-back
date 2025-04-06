@@ -8,7 +8,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/users/wishlist/contents")
@@ -28,18 +27,16 @@ public class WishlistContentController {
     }
 
     @PostMapping("/{contentId}")
-    public ResponseEntity<Map<String, String>> addWishlistContent(
-            @PathVariable Long contentId,
+    public ResponseEntity<String> addWishlistContent(@PathVariable Long contentId,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
         wishlistService.addWishlistContent(userDetails.getUser().getId(), contentId);
-        return ResponseEntity.ok(Map.of("message", "콘텐츠를 찜 목록에 추가했습니다."));
+        return ResponseEntity.ok("Content added to wishlist.");
     }
 
     @DeleteMapping("/{contentId}")
-    public ResponseEntity<Map<String, String>> removeWishlistContent(
-            @PathVariable Long contentId,
+    public ResponseEntity<String> removeWishlistContent(@PathVariable Long contentId,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
         wishlistService.removeWishlistContent(userDetails.getUser().getId(), contentId);
-        return ResponseEntity.ok(Map.of("message", "찜한 콘텐츠에서 제거되었습니다."));
+        return ResponseEntity.ok("Content removed from wishlist.");
     }
 }

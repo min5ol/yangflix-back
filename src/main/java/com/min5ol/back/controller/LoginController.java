@@ -27,22 +27,31 @@ public class LoginController {
 
     @PostMapping("/login")
     public LoginResponse login(@RequestBody LoginRequest request) {
-
-        Authentication auth = authenticationManager.authenticate(
+        System.out.println("🔥 로그인 요청 들어옴!");
+        System.out.println("▶ 아이디: " + request.getUsername());
+        System.out.println("▶ 비밀번호: " + request.getPassword());
+    
+        try {
+            Authentication auth = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
-        );
-
-        String username = auth.getName();
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(InvalidCredentialsException::new);
-
-        String token = jwtTokenProvider.createToken(username);
-
-        return new LoginResponse(
+            );
+    
+            String username = auth.getName();
+            User user = userRepository.findByUsername(username)
+                    .orElseThrow(InvalidCredentialsException::new);
+    
+            String token = jwtTokenProvider.createToken(username);
+    
+            return new LoginResponse(
                 token,
                 user.getId(),
                 user.getUsername(),
                 user.getRole().name()
-        );
+            );
+        } catch (Exception e) {
+            e.printStackTrace(); // 🔥 콘솔에 전체 에러 출력
+            throw new RuntimeException("로그인 중 서버 오류 발생: " + e.getMessage());
+        }
     }
+  
 }

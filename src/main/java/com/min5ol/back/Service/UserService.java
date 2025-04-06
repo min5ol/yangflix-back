@@ -56,6 +56,10 @@ public class UserService {
         return userRepository.existsByEmail(email);
     }
 
+    public boolean isNicknameDuplicate(String nickname) {
+        return userRepository.existsByNickname(nickname);
+    }
+
     public void validateUsername(String username) {
         if (username == null || username.trim().isEmpty()) {
             throw new SignupUsernameNotProvidedException();

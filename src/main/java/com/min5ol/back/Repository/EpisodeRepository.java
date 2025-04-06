@@ -8,7 +8,7 @@ import java.util.List;
 
 @Repository
 public interface EpisodeRepository extends JpaRepository<Episode, Long> {
+    // 엔티티의 'content' 객체의 id로 조회하도록 수정
     List<Episode> findByContent_Id(Long contentId);
-    List<Episode> findByContent_TitleAndReleaseDateStartingWith(String title, String year);
     List<Episode> findByTitleContainingIgnoreCase(String keyword);
 }

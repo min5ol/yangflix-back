@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -24,6 +25,7 @@ public class ContentService {
         this.episodeRepository = episodeRepository;
     }
 
+    // 컨텐츠 추가 (관리자용)
     public ContentResponse addContent(ContentRequest contentDto) {
         Content content = Content.builder()
                 .title(contentDto.getTitle())
@@ -31,45 +33,44 @@ public class ContentService {
                 .genre(contentDto.getGenre())
                 .thumbnail(contentDto.getThumbnailUrl())
                 .build();
-        return new ContentResponse(contentRepository.save(content));
+        Content savedContent = contentRepository.save(content);
+        return new ContentResponse(savedContent);
     }
 
+    // 컨텐츠 수정 (관리자용)
     public ContentResponse updateContent(Long id, ContentRequest updatedDto) {
-        Content content = contentRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("해당 컨텐츠가 존재하지 않습니다."));
-        content.setTitle(updatedDto.getTitle());
-        content.setDescription(updatedDto.getDescription());
-        content.setGenre(updatedDto.getGenre());
-        content.setThumbnail(updatedDto.getThumbnailUrl());
-        return new ContentResponse(contentRepository.save(content));
+        Optional<Content> existingContent = contentRepository.findById(id);
+        if (existingContent.isPresent()) {
+            Content content = existingContent.get();
+            content.setTitle(updatedDto.getTitle());
+            content.setDescription(updatedDto.getDescription());
+            content.setGenre(updatedDto.getGenre());
+            content.setThumbnail(updatedDto.getThumbnailUrl());
+            return new ContentResponse(contentRepository.save(content));
+        } else {
+            throw new RuntimeException("해당 컨텐츠가 존재하지 않습니다.");
+        }
     }
 
+    // 컨텐츠 삭제 (관리자용)
     public void deleteContent(Long id) {
         contentRepository.deleteById(id);
     }
 
+    // 전체 컨텐츠 조회
     public List<ContentResponse> getAllContent() {
         return contentRepository.findAll().stream()
                 .map(ContentResponse::new)
                 .collect(Collectors.toList());
     }
 
+    // 특정 컨텐츠 상세 조회
     public ContentResponse getContentById(Long id) {
-        return contentRepository.findById(id)
-                .map(ContentResponse::new)
+        Content content = contentRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("해당 컨텐츠가 존재하지 않습니다."));
+        return new ContentResponse(content);
     }
 
-    // ✅ 단일 title 기준 조회 (가장 첫 번째 결과 반환)
-    public ContentResponse getContentByTitle(String title) {
-        List<Content> contents = contentRepository.findByTitle(title);
-        if (contents.isEmpty()) {
-            throw new RuntimeException("해당 타이틀의 콘텐츠가 존재하지 않습니다.");
-        }
-        return new ContentResponse(contents.get(0)); // 첫 번째 콘텐츠 반환
-    }
-
-    // ✅ 키워드 기반 검색
     public List<ContentResponse> searchContents(String keyword) {
         List<Content> contentMatches = contentRepository.findByTitleContainingIgnoreCase(keyword);
         List<Episode> episodeMatches = episodeRepository.findByTitleContainingIgnoreCase(keyword);
@@ -84,25 +85,4 @@ public class ContentService {
                 .collect(Collectors.toList());
     }
 
-    // ✅ 핵심: releaseDate 기반으로 연도 필터링
-    public ContentResponse getContentByTitleAndYear(String title, String year) {
-        List<Content> contents = contentRepository.findByTitle(title);
-
-        if (contents.isEmpty()) {
-            throw new RuntimeException("해당 타이틀의 콘텐츠가 존재하지 않습니다.");
-        }
-
-        for (Content content : contents) {
-            List<Episode> episodes = episodeRepository.findByContent_Id(content.getId());
-
-            boolean hasMatch = episodes.stream()
-                    .anyMatch(ep -> String.valueOf(ep.getReleaseDate().getYear()).equals(year));
-
-            if (hasMatch) {
-                return new ContentResponse(content);
-            }
-        }
-
-        throw new RuntimeException("해당 타이틀의 콘텐츠는 있지만 해당 연도의 에피소드는 없습니다.");
-    }
 }
