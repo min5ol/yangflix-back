@@ -6,7 +6,5 @@ COPY . .
 
 RUN chmod +x gradlew && ./gradlew clean bootJar
 
-# ✅ build/libs 전체를 복사해놓고 app.jar 직접 실행
-WORKDIR /app/build/libs
-
-CMD ["java", "-jar", "app.jar"]
+# ✅ 빌드된 .jar 파일을 자동으로 찾는 ENTRYPOINT
+CMD java -jar $(find build/libs -name "*.jar" | head -n 1)
