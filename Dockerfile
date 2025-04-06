@@ -4,6 +4,6 @@ WORKDIR /app
 
 COPY . .
 
-RUN chmod +x gradlew && ./gradlew build
+RUN chmod +x gradlew && ./gradlew clean bootJar
 
-CMD ["java", "-jar", "build/libs/app.jar"]
+CMD ["java", "-jar", "./build/libs/app.jar"]
